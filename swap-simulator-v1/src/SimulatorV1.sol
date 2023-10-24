@@ -87,5 +87,32 @@ contract SimulatorV1 {
 
     function simulateCurveSwapIn(
         SwapParams memory params
-    ) public returns (uint256 amountOut) {}
+    ) public returns (uint256 amountOut) {
+        ICurvePool pool = ICurvePool(params.pool);
+
+        int128 i = 0;
+        int128 j = 0;
+
+        int128 coinIdx = 0;
+
+        while (i == j) {
+            address coin = pool.coins(coinIdx);
+
+            if (coin == params.tokenIn) {
+                i = coinIdx;
+            } else if (coin == params.tokenOut) {
+                j = coinIdx;
+            }
+
+            if (i != j) {
+                break;
+            }
+
+            unchecked {
+                coinIdx++;
+            }
+        }
+
+        amountOut = ICurvePool(params.pool).get_dy(i, j, params.amount);
+    }
 }
