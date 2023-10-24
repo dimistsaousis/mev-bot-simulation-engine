@@ -25,7 +25,34 @@ contract SimulatorV1 {
 
     function simulateSwapIn(
         SwapParams[] memory paramsArray
-    ) public returns (uint256) {}
+    ) public returns (uint256) {
+        uint256 amountOut = 0;
+        uint256 paramsArrayLength = paramsArray.length;
+
+        for (uint256 i; i < paramsArrayLength; ) {
+            SwapParams memory params = paramsArray[i];
+
+            if (amountOut == 0) {
+                amountOut = params.amount;
+            } else {
+                params.amount = amountOut;
+            }
+
+            if (params.protocol == 0) {
+                amountOut = simulateUniswapV2SwapIn(params);
+            } else if (params.protocol == 1) {
+                amountOut = simulateUniswapV3SwapIn(params);
+            } else if (params.protocol == 2) {
+                amountOut = simulateCurveSwapIn(params);
+            }
+
+            unchecked {
+                i++;
+            }
+        }
+
+        return amountOut;
+    }
 
     function simulateUniswapV2SwapIn(
         SwapParams memory params
