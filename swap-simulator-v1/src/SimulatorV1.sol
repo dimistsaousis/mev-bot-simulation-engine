@@ -2,6 +2,9 @@
 pragma solidity ^0.8.9;
 
 import "openzeppelin-contracts/contracts/utils/math/SafeMath.sol";
+import "./protocols/uniswap/UniswapV2Library.sol";
+import "./protocols/uniswap/IQuoterV2.sol";
+import "./protocols/curve/ICurvePool.sol";
 
 contract SimulatorV1 {
     using SafeMath for uint256;
@@ -56,7 +59,18 @@ contract SimulatorV1 {
 
     function simulateUniswapV2SwapIn(
         SwapParams memory params
-    ) public returns (uint256 amountOut) {}
+    ) public returns (uint256 amountOut) {
+        (uint reserveIn, uint reserveOut) = UniswapV2Library.getReserves(
+            UNISWAP_V2_FACTORY,
+            params.tokenIn,
+            params.tokenOut
+        );
+        amountOut = UniswapV2Library.getAmountOut(
+            params.amount,
+            reserveIn,
+            reserveOut
+        );
+    }
 
     function simulateUniswapV3SwapIn(
         SwapParams memory params
