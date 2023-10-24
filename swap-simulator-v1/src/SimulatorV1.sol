@@ -74,7 +74,16 @@ contract SimulatorV1 {
 
     function simulateUniswapV3SwapIn(
         SwapParams memory params
-    ) public returns (uint256 amountOut) {}
+    ) public returns (uint256 amountOut) {
+        IQuoterV2 quoter = IQuoterV2(UNISWAP_V3_QUOTER2);
+        IQuoterV2.QuoteExactInputSingleParams memory quoterParams;
+        quoterParams.tokenIn = params.tokenIn;
+        quoterParams.tokenOut = params.tokenOut;
+        quoterParams.amountIn = params.amount;
+        quoterParams.fee = params.fee;
+        quoterParams.sqrtPriceLimitX96 = 0;
+        (amountOut, , , ) = quoter.quoteExactInputSingle(quoterParams);
+    }
 
     function simulateCurveSwapIn(
         SwapParams memory params
