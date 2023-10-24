@@ -29,15 +29,21 @@ contract SimulatorV1 {
     function simulateSwapIn(
         SwapParams[] memory paramsArray
     ) public returns (uint256) {
+        // init the resulting value to 0
         uint256 amountOut = 0;
         uint256 paramsArrayLength = paramsArray.length;
 
+        // loop through each values in paramsArray one by one
         for (uint256 i; i < paramsArrayLength; ) {
             SwapParams memory params = paramsArray[i];
 
+            // if no swaps have been simulated yet, set amountOut to be
+            // the initial amount in value from params struct
             if (amountOut == 0) {
                 amountOut = params.amount;
             } else {
+                // if amountOut isn't 0, meaning a swap path has been simulated
+                // at least once, use that output to be the "amount"
                 params.amount = amountOut;
             }
 
@@ -49,6 +55,9 @@ contract SimulatorV1 {
                 amountOut = simulateCurveSwapIn(params);
             }
 
+            // don't worry about this part
+            // it simply increments i by 1
+            // this code is referenced from: https://github.com/Uniswap/universal-router/blob/main/contracts/UniversalRouter.sol
             unchecked {
                 i++;
             }
